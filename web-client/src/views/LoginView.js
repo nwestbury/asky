@@ -17,6 +17,8 @@ class LoginView extends Component {
                 <div className="field">
                     <span className="label">Password: </span><input name="password"/>
                 </div>
+
+                <button>Login</button>
             </div>
         );
     }
