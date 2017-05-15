@@ -28,7 +28,7 @@ func main() {
 	r.Handle("/products", NotImplemented).Methods("GET")
 	r.Handle("/fb", handleFacebookLogin).Methods("GET")
 
-	var port int = 3000;
+	var port int = 80;
 	var listen_path string = fmt.Sprintf(":%d", port);	
 	http.ListenAndServe(listen_path, r)
 }

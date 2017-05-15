@@ -10,6 +10,7 @@ go get golang.org/x/net/context
 go get golang.org/x/oauth2
 go get golang.org/x/oauth2/facebook
 go get github.com/asaskevich/govalidator
+go get github.com/lib/pq
 
 # Run
 ### Make sure to run in path with view folder
