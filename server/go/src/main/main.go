@@ -26,6 +26,7 @@ func main() {
 	r.Handle("/register", RegisterHandler).Methods("GET")
 	r.Handle("/status", StatusHandler).Methods("GET")
 	r.Handle("/products", NotImplemented).Methods("GET")
+	r.Handle("/fb", handleFacebookLogin).Methods("GET")
 
 	var port int = 3000;
 	var listen_path string = fmt.Sprintf(":%d", port);	
