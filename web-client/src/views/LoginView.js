@@ -5,20 +5,22 @@
 import React, { Component } from 'react';
 import './LoginView.css';
 
+import FacebookLogin from 'react-facebook-login';
+
+const responseFacebook = (response) => {
+    console.log(response);
+};
+
 class LoginView extends Component {
     render() {
         return (
             <div>
                 <h2>Login Page</h2>
-                <div className="field">
-                    <span className="label">Username: </span><input name="username"/>
-                </div>
-                <br/>
-                <div className="field">
-                    <span className="label">Password: </span><input name="password"/>
-                </div>
-
-                <button>Login</button>
+                <FacebookLogin
+                    appId="315717428848841"
+                    autoLoad={true}
+                    fields="email"
+                    callback={responseFacebook} />
             </div>
         );
     }
