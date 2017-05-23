@@ -6,7 +6,9 @@
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-facebook-login": "^3.6.0",
-    "react-router-dom": "^4.1.1"
+    "react-router": "^4.1.1",
+    "react-router-dom": "^4.1.1",
+    "prop-types": "^15.5.10"
   },
   "devDependencies": {
     "react-scripts": "0.9.5"

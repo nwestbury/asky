@@ -1,0 +1,54 @@
+.sidebar {
+    margin: 0;
+    padding: 0;
+    width: 120px;
+    background-color: #222222;
+}
+
+.sidebar-list {
+
+}
+
+.fixed-left {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+}
+
+.clean-link {
+    text-decoration: none;
+}
+
+.sidebar-item {
+    display: block;
+    padding: 10px;
+}
+
+.sidebar-item:hover {
+    background-color: #555555;
+}
+
+.quiet-label {
+    color: white;
+}
+
+.selected-label {
+    color: yellow;
+}
+
+/* Eventually should be Open Sans Bold */
+.strong {
+    font-family: "Arial Rounded MT Bold", sans-serif;
+    font-weight: bold;
+}
+
+.dark {
+    color: #222222
+}
+
+.content {
+    display: block;
+    width: 100%;
+    margin-left: 120px;
+}

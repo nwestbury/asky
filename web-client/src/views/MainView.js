@@ -7,9 +7,7 @@ import React, { Component } from 'react';
 class HomeView extends Component {
     render() {
         return (
-            <div>
-                <h2>Main Page</h2>
-            </div>
+            <h2>Main Page</h2>
         );
     }
 }
