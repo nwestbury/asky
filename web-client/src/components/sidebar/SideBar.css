@@ -29,6 +29,11 @@
     color: rgba(255, 255, 255, .5);
 }
 
+.sidebar-item:focus {
+    border-top: solid thin #7f7f7f;
+    border-bottom: solid thin #7f7f7f;
+}
+
 .sidebar-quiet-label {
     color: white;
 }
