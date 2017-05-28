@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import TabBar from '../components/tabbar/TabBar';
 
 const tabItems = [
-    { label: "Tab 1", link: "/home/tab1", accentColor: "#63b6e5" },
+    { label: "Tab 1", link: "/home", accentColor: "#63b6e5" },
     { label: "Tab 2", link: "/home/tab2", accentColor: "#63b6e5" },
 ];
 

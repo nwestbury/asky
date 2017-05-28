@@ -11,11 +11,13 @@ import "./TabBar.css"
 class TabBar extends Component {
 
     static propTypes = {
-        items: PropTypes.objectOf({
-            label: PropTypes.string.isRequired,
-            link: PropTypes.string.isRequired,
-            accentColor: PropTypes.string.isRequired,
-        }).isRequired,
+        items: PropTypes.arrayOf(
+            PropTypes.shape({
+                label: PropTypes.string.isRequired,
+                link: PropTypes.string.isRequired,
+                accentColor: PropTypes.string.isRequired,
+            }).isRequired
+        ).isRequired,
     };
 
     render() {
