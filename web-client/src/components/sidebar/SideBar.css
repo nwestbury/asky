@@ -22,19 +22,20 @@
 
 .sidebar-item {
     display: block;
-    padding: 10px;
+    padding: 10px 15px;
 }
 
 .sidebar-item:hover {
-    background-color: #555555;
+    color: rgba(255, 255, 255, .5);
 }
 
-.quiet-label {
+.sidebar-quiet-label {
     color: white;
 }
 
-.selected-label {
-    color: yellow;
+.sidebar-selected-label {
+    background-color: #313131;
+    color: white;
 }
 
 /* Eventually should be Open Sans Bold */
@@ -47,8 +48,7 @@
     color: #222222
 }
 
-.content {
+.sidebar-content {
     display: block;
-    width: 100%;
     margin-left: 120px;
 }

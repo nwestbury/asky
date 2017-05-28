@@ -10,11 +10,19 @@ import "./SideBar.css"
 
 //TODO: Add icons
 export const defaultSidebarItems = [
-    { label: "Home", link:"/" },
-    { label: "Login", link:"/login" }
+    { label: "Home", link: "/home", accentColor: "#63b6e5" },
+    { label: "Login", link: "/login", accentColor: "#3887BE" }
 ];
 
 class SideBar extends Component {
+
+    static propTypes = {
+        items: PropTypes.objectOf({
+            label: PropTypes.string.isRequired,
+            link: PropTypes.string.isRequired,
+            accentColor: PropTypes.string.isRequired,
+        }).isRequired,
+    };
 
     render() {
         const { items } = this.props;
@@ -22,11 +30,13 @@ class SideBar extends Component {
             <div className="sidebar fixed-left dark">
                 { items.map((item, index) => (
                     <NavLink
-                        activeClassName="selected-label"
-                        className="sidebar-item clean-link quiet-label strong"
+                        activeClassName="sidebar-selected-label"
+                        className="sidebar-item clean-link sidebar-quiet-label strong"
+                        activeStyle={{borderLeft: "solid medium ".concat(item.accentColor)}}
+                        style={{borderLeft: "solid medium #222222"}}
                         key={item.label.toLowerCase()}
                         to={item.link}
-                        exact={true}>
+                        exact={false}>
 
                         {item.label}
 
@@ -37,17 +47,10 @@ class SideBar extends Component {
     }
 }
 
-SideBar.propTypes = {
-    items: PropTypes.objectOf({
-        label: PropTypes.string.isRequired,
-        link: PropTypes.string.isRequired,
-    }).isRequired,
-};
-
 const SideBarWrapper = (props) => (
   <div style={ { margin: 0, padding: 0 } }>
       <SideBar items={props.items}/>
-      <div className="content">
+      <div className="sidebar-content">
           { props.children }
       </div>
   </div>

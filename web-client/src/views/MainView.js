@@ -1,15 +1,15 @@
 /**
- * Created by James on 2017-05-13.
+ * Created by James on 2017-05-28.
  */
 
 import React, { Component } from 'react';
 
-class HomeView extends Component {
+class MainView extends Component {
     render() {
         return (
-            <h2>Main Page</h2>
+            <h2>Main View</h2>
         );
     }
 }
 
-export default HomeView;
+export default MainView;
