@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0-beta" last-position="54,2" last-zoom="1"
+<dbmodel pgmodeler-ver="0.9.0-beta" last-position="0,67" last-zoom="0.75"
 	 default-schema="public" default-owner="postgres">
 <role name="nico"
       superuser="true"
@@ -53,7 +53,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="card" hide-ext-attribs="true">
 	<schema name="main_schema"/>
 	<role name="postgres"/>
-	<position x="160" y="103"/>
+	<position x="380" y="183"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="128"/>
 	</column>
@@ -71,25 +71,25 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="collection" hide-ext-attribs="true">
 	<schema name="main_schema"/>
 	<role name="postgres"/>
-	<position x="140" y="323"/>
+	<position x="360" y="403"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="128"/>
 	</column>
-	<column name="deck_id" not-null="true">
-		<type name="integer" length="128"/>
+	<column name="name">
+		<type name="varchar" length="100"/>
 	</column>
 	<column name="creation_time" not-null="true">
 		<type name="timestamptz" length="0"/>
 	</column>
 	<constraint name="collection_pk" type="pk-constr" table="main_schema.collection">
-		<columns names="id,deck_id" ref-type="src-columns"/>
+		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
 <table name="card_diff" hide-ext-attribs="true">
 	<schema name="main_schema"/>
 	<role name="postgres"/>
-	<position x="580" y="83"/>
+	<position x="800" y="143"/>
 	<column name="id" not-null="true">
 		<type name="integer" length="1"/>
 	</column>
@@ -98,6 +98,12 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="user_id" not-null="true">
 		<type name="integer" length="128"/>
+	</column>
+	<column name="index">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="length">
+		<type name="integer" length="0"/>
 	</column>
 	<column name="action" not-null="true">
 		<type name="varchar" length="32"/>
@@ -108,7 +114,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="creation_time" not-null="true">
 		<type name="timestamptz" length="0"/>
 	</column>
-	<constraint name="diff_pk" type="pk-constr" table="main_schema.card_diff">
+	<constraint name="card_diff_pk" type="pk-constr" table="main_schema.card_diff">
 		<columns names="id,card_id" ref-type="src-columns"/>
 	</constraint>
 </table>
@@ -116,7 +122,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="card_action" hide-ext-attribs="true">
 	<schema name="main_schema"/>
 	<role name="postgres"/>
-	<position x="940" y="120"/>
+	<position x="1160" y="223"/>
 	<column name="name" not-null="true">
 		<type name="varchar" length="32"/>
 	</column>
@@ -125,51 +131,39 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="owner" hide-ext-attribs="true">
+<table name="collection_owner" hide-ext-attribs="true">
 	<schema name="main_schema"/>
 	<role name="postgres"/>
-	<position x="620" y="483"/>
+	<position x="0" y="403"/>
 	<column name="user_id" not-null="true">
 		<type name="integer" length="128"/>
 	</column>
-	<column name="object_id" not-null="true">
+	<column name="collection_id" not-null="true">
 		<type name="integer" length="128"/>
-	</column>
-	<column name="object_type" not-null="true">
-		<type name="varchar" length="32"/>
 	</column>
 	<column name="creation_time" not-null="true">
 		<type name="timestamptz" length="0"/>
 	</column>
-	<constraint name="owner_pkey" type="pk-constr" table="main_schema.owner">
-		<columns names="user_id,object_id,object_type" ref-type="src-columns"/>
-	</constraint>
-</table>
-
-<table name="object_type" hide-ext-attribs="true">
-	<schema name="main_schema"/>
-	<role name="postgres"/>
-	<position x="940" y="483"/>
-	<column name="name" not-null="true">
-		<type name="varchar" length="32"/>
-	</column>
-	<constraint name="object_types_pk" type="pk-constr" table="main_schema.object_type">
-		<columns names="name" ref-type="src-columns"/>
+	<constraint name="collection_owner_pk" type="pk-constr" table="main_schema.collection_owner">
+		<columns names="user_id,collection_id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
 <table name="collection_diff" hide-ext-attribs="true">
 	<schema name="main_schema"/>
 	<role name="postgres"/>
-	<position x="580" y="343"/>
+	<position x="800" y="443"/>
 	<column name="id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
 	<column name="collection_id" not-null="true">
-		<type name="varchar" length="128"/>
+		<type name="integer" length="128"/>
 	</column>
 	<column name="user_id" not-null="true">
 		<type name="integer" length="128"/>
+	</column>
+	<column name="deck_id">
+		<type name="integer" length="0"/>
 	</column>
 	<column name="action" not-null="true">
 		<type name="varchar" length="32"/>
@@ -188,7 +182,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="collection_action" hide-ext-attribs="true">
 	<schema name="main_schema"/>
 	<role name="postgres"/>
-	<position x="940" y="380"/>
+	<position x="1160" y="503"/>
 	<column name="name" not-null="true">
 		<type name="varchar" length="32"/>
 	</column>
@@ -200,18 +194,21 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="user" hide-ext-attribs="true">
 	<schema name="main_schema"/>
 	<role name="postgres"/>
-	<position x="160" y="463"/>
+	<position x="380" y="543"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="128"/>
+	</column>
+	<column name="type" not-null="true">
+		<type name="varchar" length="64"/>
+	</column>
+	<column name="api_id" not-null="true">
+		<type name="varchar" length="256"/>
 	</column>
 	<column name="email">
 		<type name="varchar" length="128"/>
 	</column>
 	<column name="hash">
-		<type name="varchar" length="128"/>
-	</column>
-	<column name="token">
-		<type name="varchar" length="128"/>
+		<type name="char" length="128"/>
 	</column>
 	<column name="creation_time" not-null="true">
 		<type name="timestamptz" length="0"/>
@@ -219,12 +216,15 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<constraint name="user_pk" type="pk-constr" table="main_schema.&quot;user&quot;">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
+	<constraint name="api_id_ukey" type="uq-constr" table="main_schema.&quot;user&quot;">
+		<columns names="type,api_id" ref-type="src-columns"/>
+	</constraint>
 </table>
 
 <table name="session" hide-ext-attribs="true">
 	<schema name="main_schema"/>
 	<role name="postgres"/>
-	<position x="620" y="583"/>
+	<position x="800" y="583"/>
 	<column name="user_id" not-null="true">
 		<type name="integer" length="128"/>
 	</column>
@@ -248,25 +248,25 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="deck" hide-ext-attribs="true">
 	<schema name="main_schema"/>
 	<role name="postgres"/>
-	<position x="140" y="223"/>
+	<position x="360" y="303"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
-	<column name="card_id" not-null="true">
-		<type name="integer" length="0"/>
+	<column name="name">
+		<type name="varchar" length="100"/>
 	</column>
 	<column name="creation_time" not-null="true">
 		<type name="timestamptz" length="0"/>
 	</column>
 	<constraint name="deck_pk" type="pk-constr" table="main_schema.deck">
-		<columns names="id,card_id" ref-type="src-columns"/>
+		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
 <table name="deck_diff" hide-ext-attribs="true">
 	<schema name="main_schema"/>
 	<role name="postgres"/>
-	<position x="580" y="203"/>
+	<position x="800" y="303"/>
 	<column name="id" not-null="true">
 		<type name="integer" length="0"/>
 	</column>
@@ -274,6 +274,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="integer" length="0"/>
 	</column>
 	<column name="user_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="card_id">
 		<type name="integer" length="0"/>
 	</column>
 	<column name="action" not-null="true">
@@ -293,7 +296,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="deck_action" hide-ext-attribs="true">
 	<schema name="main_schema"/>
 	<role name="postgres"/>
-	<position x="920" y="240"/>
+	<position x="1160" y="363"/>
 	<column name="name" not-null="true">
 		<type name="varchar" length="32"/>
 	</column>
@@ -302,11 +305,71 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<constraint name="collection_deck_id_fkey" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.deck" table="main_schema.collection">
-	<columns names="deck_id" ref-type="src-columns"/>
-	<columns names="id" ref-type="dst-columns"/>
-</constraint>
+<table name="deck_owner" hide-ext-attribs="true">
+	<schema name="main_schema"/>
+	<role name="postgres"/>
+	<position x="0" y="283"/>
+	<column name="user_id" not-null="true">
+		<type name="integer" length="128"/>
+	</column>
+	<column name="deck_id" not-null="true">
+		<type name="integer" length="128"/>
+	</column>
+	<column name="creation_time" not-null="true">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<constraint name="deck_owner_pkey" type="pk-constr" table="main_schema.deck_owner">
+		<columns names="user_id,deck_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="card_owner" hide-ext-attribs="true">
+	<schema name="main_schema"/>
+	<role name="postgres"/>
+	<position x="0" y="183"/>
+	<column name="user_id" not-null="true">
+		<type name="integer" length="128"/>
+	</column>
+	<column name="card_id" not-null="true">
+		<type name="integer" length="128"/>
+	</column>
+	<column name="creation_time" not-null="true">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<constraint name="card_owner_pk" type="pk-constr" table="main_schema.card_owner">
+		<columns names="user_id,card_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="deck_cards" hide-ext-attribs="true">
+	<schema name="main_schema"/>
+	<role name="postgres"/>
+	<position x="1365.33" y="303"/>
+	<column name="card_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="deck_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="deck_cards_pk" type="pk-constr" table="main_schema.deck_cards">
+		<columns names="card_id,deck_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="collection_decks" hide-ext-attribs="true">
+	<schema name="main_schema"/>
+	<role name="postgres"/>
+	<position x="1360" y="443"/>
+	<column name="deck_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="collection_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="collection_decks_pk" type="pk-constr" table="main_schema.collection_decks">
+		<columns names="deck_id,collection_id" ref-type="src-columns"/>
+	</constraint>
+</table>
 
 <constraint name="action_fkey" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.card_action" table="main_schema.card_diff">
@@ -326,27 +389,15 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="object_name_fkey" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.object_type" table="main_schema.owner">
-	<columns names="object_type" ref-type="src-columns"/>
-	<columns names="name" ref-type="dst-columns"/>
-</constraint>
-
-<constraint name="object_id_collection_fkey" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="CASCADE" del-action="CASCADE" ref-table="main_schema.collection" table="main_schema.owner">
-	<columns names="object_id" ref-type="src-columns"/>
+<constraint name="user_id_collection_fkey" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.&quot;user&quot;" table="main_schema.collection_owner">
+	<columns names="user_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="object_id_card_fkey" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="CASCADE" del-action="CASCADE" ref-table="main_schema.card" table="main_schema.owner">
-	<columns names="object_id" ref-type="src-columns"/>
-	<columns names="id" ref-type="dst-columns"/>
-</constraint>
-
-<constraint name="object_id_deck_id_fkey" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="CASCADE" del-action="CASCADE" ref-table="main_schema.deck" table="main_schema.owner">
-	<columns names="object_id" ref-type="src-columns"/>
+<constraint name="collection_id_collection_fkey" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.collection" table="main_schema.collection_owner">
+	<columns names="collection_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
@@ -368,15 +419,15 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="session_user_id_fkey" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="CASCADE" del-action="CASCADE" ref-table="main_schema.&quot;user&quot;" table="main_schema.session">
-	<columns names="user_id" ref-type="src-columns"/>
+<constraint name="collection_diff_deck_id_fkey" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.deck" table="main_schema.collection_diff">
+	<columns names="deck_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="deck_card_if_fkey" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.card" table="main_schema.deck">
-	<columns names="card_id" ref-type="src-columns"/>
+<constraint name="session_user_id_fkey" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="main_schema.&quot;user&quot;" table="main_schema.session">
+	<columns names="user_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
@@ -398,6 +449,60 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="name" ref-type="dst-columns"/>
 </constraint>
 
+<constraint name="deck_diff_card_fkey" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.card" table="main_schema.deck_diff">
+	<columns names="card_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="user_id_deck_fkey" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.&quot;user&quot;" table="main_schema.deck_owner">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="deck_id_fkey" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.deck" table="main_schema.deck_owner">
+	<columns names="deck_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="user_id_card_fkey" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.&quot;user&quot;" table="main_schema.card_owner">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="card_id_fkey" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.card" table="main_schema.card_owner">
+	<columns names="card_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="deck_cards_deck_fkey" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.deck" table="main_schema.deck_cards">
+	<columns names="deck_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="deck_cards_cards_fkey" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.card" table="main_schema.deck_cards">
+	<columns names="card_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="collection_decks_deck_fkey" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.deck" table="main_schema.collection_decks">
+	<columns names="deck_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="deck_collections_collection_fkey" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="main_schema.collection" table="main_schema.collection_decks">
+	<columns names="collection_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
 <relationship name="rel_diff_action" type="relfk"
 	 src-table="main_schema.card_diff"
 	 dst-table="main_schema.card_action"
@@ -405,21 +510,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <relationship name="rel_diff_card" type="relfk"
 	 src-table="main_schema.card_diff"
-	 dst-table="main_schema.card"
-	 src-required="false" dst-required="false"/>
-
-<relationship name="rel_owner_object_types" type="relfk"
-	 src-table="main_schema.owner"
-	 dst-table="main_schema.object_type"
-	 src-required="false" dst-required="false"/>
-
-<relationship name="rel_owner_collection" type="relfk"
-	 src-table="main_schema.owner"
-	 dst-table="main_schema.collection"
-	 src-required="false" dst-required="false"/>
-
-<relationship name="rel_owner_card" type="relfk"
-	 src-table="main_schema.owner"
 	 dst-table="main_schema.card"
 	 src-required="false" dst-required="false"/>
 
@@ -441,16 +531,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<position x="6.54" y="-0.2"/>
 	</label>
 </relationship>
-
-<relationship name="rel_collection_deck" type="relfk"
-	 src-table="main_schema.collection"
-	 dst-table="main_schema.deck"
-	 src-required="false" dst-required="false"/>
-
-<relationship name="rel_deck_card" type="relfk"
-	 src-table="main_schema.deck"
-	 dst-table="main_schema.card"
-	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_deck_diff_deck" type="relfk"
 	 src-table="main_schema.deck_diff"
@@ -477,9 +557,68 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="main_schema.deck_action"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_owner_deck" type="relfk"
-	 src-table="main_schema.owner"
+<relationship name="rel_collection_owner_user" type="relfk"
+	 src-table="main_schema.collection_owner"
+	 dst-table="main_schema.&quot;user&quot;"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_collection_owner_collection" type="relfk"
+	 src-table="main_schema.collection_owner"
+	 dst-table="main_schema.collection"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_collection_owner_cp_user" type="relfk"
+	 src-table="main_schema.deck_owner"
+	 dst-table="main_schema.&quot;user&quot;"
+	 src-required="false" dst-required="false">
+	<label ref-type="src-label">
+		<position x="-3.46" y="-0.2"/>
+	</label>
+</relationship>
+
+<relationship name="rel_deck_owner_deck" type="relfk"
+	 src-table="main_schema.deck_owner"
 	 dst-table="main_schema.deck"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_deck_owner_cp_user" type="relfk"
+	 src-table="main_schema.card_owner"
+	 dst-table="main_schema.&quot;user&quot;"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_card_owner_card" type="relfk"
+	 src-table="main_schema.card_owner"
+	 dst-table="main_schema.card"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_deck_cards_deck" type="relfk"
+	 src-table="main_schema.deck_cards"
+	 dst-table="main_schema.deck"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_deck_cards_card" type="relfk"
+	 src-table="main_schema.deck_cards"
+	 dst-table="main_schema.card"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_deck_diff_card" type="relfk"
+	 src-table="main_schema.deck_diff"
+	 dst-table="main_schema.card"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_collection_diff_deck" type="relfk"
+	 src-table="main_schema.collection_diff"
+	 dst-table="main_schema.deck"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_collection_decks_deck" type="relfk"
+	 src-table="main_schema.collection_decks"
+	 dst-table="main_schema.deck"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_collection_decks_collection" type="relfk"
+	 src-table="main_schema.collection_decks"
+	 dst-table="main_schema.collection"
 	 src-required="false" dst-required="false"/>
 
 </dbmodel>
