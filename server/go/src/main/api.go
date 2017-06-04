@@ -7,14 +7,31 @@ import (
 	"io/ioutil"
 	"encoding/json"
 )
+type Card struct {
+	CardID int      `json:"card_id,omitempty"`
+	Contents string `json:"contents,omitempty"`
+}
+
+type Deck struct {
+	DeckID int      `json:"deck_id,omitempty"`
+	Title string    `json:"title,omitempty"`
+}
+
+type Collection struct {
+	CollectionID int `json:"collection_id,omitempty"`
+	Title string     `json:"title,omitempty"`
+}
 
 type Recieve struct {
 	Action string    `json:"action"`
 	Token string     `json:"token"`
 	TokenType string `json:"token_type"`
+	CardID   int     `json:"card_id,omitempty"`
 	CardData string  `json:"card_data,omitempty"`
 	DeckName string  `json:"deck_name,omitempty"`
+	DeckID   int     `json:"deck_id,omitempty"`
 	CollectionName string  `json:"collection_name,omitempty"`
+	CollectionID   int     `json:"collection_id,omitempty"`
 	IDs []int        `json:"ids,omitempty"`
 }
 
@@ -22,9 +39,12 @@ type Response struct {
     Message string `json:"msg"`
 	Success bool   `json:"success"`
     CardID int     `json:"card_id,omitempty"`
-	Cards string   `json:"cards,omitempty"`
-	DeckID int     `json:"card_id,omitempty"`
+	Cards *[]Card   `json:"cards,omitempty"`
+	Decks *[]Deck   `json:"decks,omitempty"`
+	Collections *[]Collection   `json:"collections,omitempty"`
+	DeckID int       `json:"deck_id,omitempty"`
 	CollectionID int `json:"collection_id,omitempty"`
+	
 }
 
 type FBResponse struct {
@@ -77,6 +97,16 @@ func handle_action(msg []byte, c *Client) {
 			err = list_decks(user_id, &rec, &resp)
 		case "list_collections":
 			err = list_collections(user_id, &rec, &resp)
+		case "replace_card":
+			err = replace_card(user_id, &rec, &resp)
+		case "rename_deck":
+			err = rename_deck(user_id, &rec, &resp)
+		case "rename_collection":
+			err = rename_collection(user_id, &rec, &resp)
+		case "add_card_to_deck":
+			err = add_card_to_deck(user_id, &rec, &resp)
+		case "add_deck_to_collection":
+			err = add_deck_to_collection(user_id, &rec, &resp)
 		default:
 			resp.Message = "Unknown action"
 			resp.Success = false

@@ -2,6 +2,8 @@ package main
 
 import (
 	"errors"
+	"log"
+	"database/sql"
 )
 
 func create_card(user_id int, rec *Recieve, resp *Response) (error) {
@@ -149,13 +151,125 @@ func create_collection(user_id int, rec *Recieve, resp *Response) (error) {
 }
 
 func list_cards(user_id int, rec *Recieve, resp *Response) (error) {
+	var err error
+	var rows *sql.Rows
+	var query string = `SELECT DISTINCT ON (card_id) card_id, contents FROM main_schema.card_owner
+                        NATURAL JOIN main_schema.card NATURAL LEFT JOIN main_schema.deck_cards
+                        WHERE user_id = $1`
+	
+	if rec.DeckID > 0 {
+		query += " AND deck_id = $2"
+		rows, err = db.Query(query, user_id, rec.DeckID)
+	}else{
+		rows, err = db.Query(query, user_id)
+	}
+
+	if err != nil {
+		log.Print("error", err)
+		resp.Message = "Query failed"
+		resp.Success = false
+		return err
+	}
+
+	var cards []Card = make([]Card, 0)
+	defer rows.Close()
+	for rows.Next() {
+        var c Card
+        if err = rows.Scan(&c.CardID, &c.Contents); err != nil {
+			resp.Message = "Query failed"
+			resp.Success = false
+			return err
+        }
+		cards = append(cards, c)
+	}
+	
+	if err = rows.Err(); err != nil {
+		resp.Message = "Row errors"
+		resp.Success = false
+		return err
+	}
+
+	resp.Message = "Cards Listed"
+	resp.Success = true
+	resp.Cards = &cards
 	return nil
 }
 
 func list_decks(user_id int, rec *Recieve, resp *Response) (error) {
+	var err error
+	var rows *sql.Rows
+	var query string = `SELECT DISTINCT ON (deck_id) deck_id, name FROM main_schema.deck_owner
+                        NATURAL JOIN main_schema.deck
+                        WHERE user_id = $1`
+	
+	rows, err = db.Query(query, user_id)
+
+	if err != nil {
+		resp.Message = "Query failed"
+		resp.Success = false
+		return err
+	}
+
+	var decks []Deck = make([]Deck, 0)
+	defer rows.Close()
+	for rows.Next() {
+        var d Deck
+        if err = rows.Scan(&d.DeckID, &d.Title); err != nil {
+			resp.Message = "Query failed"
+			resp.Success = false
+			return err
+        }
+		decks = append(decks, d)
+	}
+	
+	if err = rows.Err(); err != nil {
+		resp.Message = "Row errors"
+		resp.Success = false
+		return err
+	}
+
+	resp.Message = "Decks Listed"
+	resp.Success = true
+	resp.Decks = &decks
 	return nil
 }
 
 func list_collections(user_id int, rec *Recieve, resp *Response) (error) {
+	var err error
+	var rows *sql.Rows
+	var query string = `SELECT DISTINCT ON (collection_id) collection_id, name FROM main_schema.collection_owner
+                        NATURAL JOIN main_schema.collection
+                        WHERE user_id = $1`
+	
+	rows, err = db.Query(query, user_id)
+
+	if err != nil {
+		resp.Message = "Query failed"
+		resp.Success = false
+		return err
+	}
+
+	var collections []Collection = make([]Collection, 0)
+	defer rows.Close()
+	for rows.Next() {
+        var c Collection
+        if err = rows.Scan(&c.CollectionID, &c.Title); err != nil {
+			resp.Message = "Query failed"
+			resp.Success = false
+			return err
+        }
+		collections = append(collections, c)
+	}
+	
+	if err = rows.Err(); err != nil {
+		resp.Message = "Row errors"
+		resp.Success = false
+		return err
+	}
+
+	resp.Message = "Collections Listed"
+	resp.Success = true
+	resp.Collections = &collections
 	return nil
 }
+
