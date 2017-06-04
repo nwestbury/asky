@@ -15,8 +15,12 @@ var db *sql.DB
 func main() {
 	var err error;
 	db, err = sql.Open("postgres", "user=postgres password=postgres dbname=flash");
-	db.Exec("INSERT INTO main_schema.object_type VALUES ('card'), ('deck'), ('collection') ON CONFLICT DO NOTHING")
-	db.Exec("INSERT INTO main_schema.card_action VALUES ('insert'), ('delete') ('replace') ON CONFLICT DO NOTHING")
+	
+	if err != nil {
+		log.Fatal("Failed to open: ", err);
+	}
+	
+	db.Exec("INSERT INTO main_schema.card_action VALUES ('insert'), ('delete'), ('replace') ON CONFLICT DO NOTHING")
 	db.Exec("INSERT INTO main_schema.deck_action VALUES ('rename'), ('insert_card'), ('remove_card') ON CONFLICT DO NOTHING")
 	db.Exec("INSERT INTO main_schema.collection_action VALUES ('rename'), ('insert_deck'), ('remove_deck') ON CONFLICT DO NOTHING")
 	
@@ -37,6 +41,8 @@ func main() {
 	var listen_path string = fmt.Sprintf(":%d", port);
 	err = http.ListenAndServe(listen_path, r);
 
+	log.Print("Listing and serving on", port);
+	
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err);
 	}
