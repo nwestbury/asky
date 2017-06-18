@@ -13,22 +13,37 @@ import (
 var db *sql.DB
 
 func main() {
-	var err error
-	db, err = sql.Open("postgres", "user=postgres password=postgres dbname=flash")
+	var err error;
+	db, err = sql.Open("postgres", "user=postgres password=postgres dbname=flash");
 	
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Failed to open: ", err);
 	}
 	
-	r := mux.NewRouter()
-	r.Handle("/", http.FileServer(http.Dir("./views/")))
-	r.Handle("/login", LoginHandler).Methods("GET")
-	r.Handle("/register", RegisterHandler).Methods("GET")
-	r.Handle("/status", StatusHandler).Methods("GET")
-	r.Handle("/products", NotImplemented).Methods("GET")
-	r.Handle("/fb", handleFacebookLogin).Methods("GET")
+	db.Exec("INSERT INTO main_schema.card_action VALUES ('insert'), ('delete'), ('replace') ON CONFLICT DO NOTHING")
+	db.Exec("INSERT INTO main_schema.deck_action VALUES ('rename'), ('insert_card'), ('remove_card') ON CONFLICT DO NOTHING")
+	db.Exec("INSERT INTO main_schema.collection_action VALUES ('rename'), ('insert_deck'), ('remove_deck') ON CONFLICT DO NOTHING")
+	
+	if err != nil {
+		log.Fatal(err);
+	}
 
-	var port int = 80;
-	var listen_path string = fmt.Sprintf(":%d", port);	
-	http.ListenAndServe(listen_path, r)
+	hub := newHub();
+	go hub.run();
+
+	r := mux.NewRouter();
+	r.Handle("/", http.FileServer(http.Dir("./views/")));
+	r.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		serveWs(hub, w, r);
+	})
+
+	var port int = 3000;
+	var listen_path string = fmt.Sprintf(":%d", port);
+	err = http.ListenAndServe(listen_path, r);
+
+	log.Print("Listing and serving on", port);
+	
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err);
+	}
 }

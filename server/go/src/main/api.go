@@ -1,155 +1,215 @@
 package main
 
 import (
-	"os"
 	"log"
 	"net/http"
 	"net/url"
-	"fmt"
 	"io/ioutil"
-	"strings"
 	"encoding/json"
-	//	"golang.org/x/net/context"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/facebook"
-	"github.com/asaskevich/govalidator"
 )
+type Card struct {
+	CardID int      `json:"card_id,omitempty"`
+	Contents string `json:"contents,omitempty"`
+}
+
+type Deck struct {
+	DeckID int      `json:"deck_id,omitempty"`
+	Title string    `json:"title,omitempty"`
+}
+
+type Collection struct {
+	CollectionID int `json:"collection_id,omitempty"`
+	Title string     `json:"title,omitempty"`
+}
+
+type Recieve struct {
+	Action string    `json:"action"`
+	Token string     `json:"token"`
+	TokenType string `json:"token_type"`
+	CardID   int     `json:"card_id,omitempty"`
+	CardData string  `json:"card_data,omitempty"`
+	DeckName string  `json:"deck_name,omitempty"`
+	DeckID   int     `json:"deck_id,omitempty"`
+	CollectionName string  `json:"collection_name,omitempty"`
+	CollectionID   int     `json:"collection_id,omitempty"`
+	IDs []int        `json:"ids,omitempty"`
+}
 
 type Response struct {
     Message string `json:"msg"`
 	Success bool   `json:"success"`
+    CardID int     `json:"card_id,omitempty"`
+	Cards *[]Card   `json:"cards,omitempty"`
+	Decks *[]Deck   `json:"decks,omitempty"`
+	Collections *[]Collection   `json:"collections,omitempty"`
+	DeckID int       `json:"deck_id,omitempty"`
+	CollectionID int `json:"collection_id,omitempty"`
+	
 }
 
-var oauthConf = &oauth2.Config{
-    ClientID:     os.Getenv("ENV_FB_CLIENT_ID"),
-    ClientSecret: os.Getenv("ENV_FB_CLIENT_SECRET"),
-    RedirectURL:  os.Getenv("ENV_FB_REDIRECT_URL"),
-    Scopes:       []string{"email", "public_profile"},
-    Endpoint:     facebook.Endpoint,
+type FBResponse struct {
+	ID string                  `json:"id"`
+	Name string                `json:"name"`
+	X map[string]interface{}   `json:"-"`
 }
 
-var oauthStateString = "thisshouldberandom"
+var failed_parse_resp, _ = json.Marshal(Response{
+	Message: "Failed to parse input",
+	Success: false,
+})
 
-func writeReply(w http.ResponseWriter, resp *Response){
-	w.Header().Set("Content-Type", "application/json")
-	bytes, err := json.Marshal(*resp)
+func handle_action(msg []byte, c *Client) {
+	rec := Recieve{}
+	err := json.Unmarshal(msg, &rec)
+
+	if err != nil {
+		c.send <- failed_parse_resp
+		return
+	}
+
+	resp := Response{
+		Message: "Something went wrong",
+		Success: false,
+	}
+
+	log.Print("Got the following action ", rec.Action)
+	
+	user_id := check_login(&rec, &resp, c)
+	
+	if user_id != -1 {
+		uc := UserClient{
+			client: c,
+			user_id: user_id,
+		}
+		c.hub.login <- &uc
+
+		switch action := rec.Action; action {
+		case "login":
+		case "create_card":
+			err = create_card(user_id, &rec, &resp)
+		case "create_deck":
+			err = create_deck(user_id, &rec, &resp)
+		case "create_collection":
+			err = create_collection(user_id, &rec, &resp)
+		case "list_cards":
+			err = list_cards(user_id, &rec, &resp)
+		case "list_decks":
+			err = list_decks(user_id, &rec, &resp)
+		case "list_collections":
+			err = list_collections(user_id, &rec, &resp)
+		case "replace_card":
+			err = replace_card(user_id, &rec, &resp)
+		case "rename_deck":
+			err = rename_deck(user_id, &rec, &resp)
+		case "rename_collection":
+			err = rename_collection(user_id, &rec, &resp)
+		case "add_card_to_deck":
+			err = add_card_to_deck(user_id, &rec, &resp)
+		case "add_deck_to_collection":
+			err = add_deck_to_collection(user_id, &rec, &resp)
+		default:
+			resp.Message = "Unknown action"
+			resp.Success = false
+		}
+		
+	}
 
 	if err != nil {
 		log.Print(err)
 	}
-	
-	w.Write(bytes)
+
+	// c.hub.broadcast <- msg
+
+	byte_msg, _ := json.Marshal(resp)
+	c.send <- byte_msg
 }
 
-var NotImplemented = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-	resp := Response{Message: "Not implemented", Success: false}
-	writeReply(w, &resp)
-})
+func check_login(rec *Recieve, resp *Response, c *Client) int{
 
-var StatusHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-	fmt.Printf("TEST %s\n", os.Getenv("ENV_FB_CLIENT_ID"))
-	resp := Response{Message: "OK!", Success: true}
-	writeReply(w, &resp)
-})
+	var user_id int = -1
+	
+	if rec.TokenType == "fb" {
+		http_req, err := http.Get("https://graph.facebook.com/me?access_token=" + url.QueryEscape(rec.Token))
 
-var RegisterHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-	query := r.URL.Query()
-	email := query.Get("email")
-	token := query.Get("token")
+		if err != nil {
+			resp.Message = "Could not verify token"
+			resp.Success = false
+			return -1
+		}
 
-	resp := Response{Message: "Failed", Success: false}
+		http_resp, err := ioutil.ReadAll(http_req.Body)
 
-	if len(email) == 0 || len(token) == 0 {
-		resp.Message = "Missing email or token"
-		writeReply(w, &resp)
-		return
+		if err != nil {
+			log.Print(err)
+			resp.Message = "Weird read error"
+			resp.Success = false
+			return -1
+		}
+
+		fbresp := FBResponse{}
+		if err := json.Unmarshal(http_resp, &fbresp); err != nil {
+			log.Print(err)
+			resp.Message = "Invalid login"
+			resp.Success = false
+			return -1
+		}
+		if err := json.Unmarshal(http_resp, &fbresp.X); err != nil {
+			log.Print(err)
+			resp.Message = "Invalid login"
+			resp.Success = false
+			return -1
+		}
+
+		if fbresp.ID != "" {
+			log.Print("Got userid ", fbresp.ID)
+			err := register_if_not_exists("fb", fbresp.ID)
+			if err == nil {
+				user_id = get_user_id("fb", fbresp.ID)
+			}
+		}else{
+			resp.Message = "Facebook Authentication Failed"
+			resp.Success = false
+			return -1
+		}
 	}
 
-	if !govalidator.IsEmail(email) {
-		resp.Message = "Not a valid email"
-		writeReply(w, &resp)
-		return
+	if user_id != -1 {
+		resp.Message = "Login Successful"
+		resp.Success = true
+	}else{
+		resp.Message = "Failed to login"
+		resp.Success = false
+	}
+
+	return user_id
+}
+
+func register_if_not_exists(api_type string, api_id string) (error){
+	stmt, err := db.Prepare(`INSERT INTO main_schema.user (type, api_id, creation_time)
+                             VALUES ($1, $2, NOW()) ON CONFLICT DO NOTHING`)
+	if err != nil {
+		log.Print("Register failed", err)
+		return err
 	}
 	
-	stmt, err := db.Prepare(`INSERT INTO main_schema.user (email, token, creation_time) 
-                             VALUES ($1, $2, NOW())`)
-
+	_, err = stmt.Exec(api_type, api_id)
 	if err != nil {
-		log.Print(err)
-		resp.Message = "Internal fail"
-		writeReply(w, &resp)
-		return
+		log.Print("Register failed exec", err)
+		return err
+	}
+
+	return err
+}
+
+func get_user_id(api_type string, api_id string) int{
+	var id int = -1
+
+	err := db.QueryRow("SELECT id FROM main_schema.user WHERE type=$1 AND api_id=$2 LIMIT 1", api_type, api_id).Scan(&id)
+	
+	if err != nil {
+		log.Print("Fetch user id failed", err)
+		return -1
 	}
 	
-	_, err = stmt.Exec(email, token)
-
-	if err != nil {
-		log.Print(err)
-		writeReply(w, &resp)
-		return
-	}
-
-	resp.Success = true
-	resp.Message = "OK!"
-	writeReply(w, &resp)
-}) 
-
-
-var handleFacebookLogin = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	Url, err := url.Parse(oauthConf.Endpoint.AuthURL)
-	if err != nil {
-		log.Fatal("Parse: ", err)
-	}
-	parameters := url.Values{}	
-	parameters.Add("client_id", oauthConf.ClientID)
-	parameters.Add("scope", strings.Join(oauthConf.Scopes, " "))
-	parameters.Add("redirect_uri", oauthConf.RedirectURL)
-	parameters.Add("response_type", "code")
-	parameters.Add("state", oauthStateString)
-	Url.RawQuery = parameters.Encode()
-	url := Url.String()
-	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
-})
-
-var handleFacebookCallback = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	state := r.FormValue("state")
-	if state != oauthStateString {
-		fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", oauthStateString, state)
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
-	}
-
-	code := r.FormValue("code")
-
-	token, err := oauthConf.Exchange(oauth2.NoContext, code)
-	if err != nil {
-		fmt.Printf("oauthConf.Exchange() failed with '%s'\n", err)
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
-	}
-
-	resp, err := http.Get("https://graph.facebook.com/me?access_token=" +
-		url.QueryEscape(token.AccessToken))
-	if err != nil {
-		fmt.Printf("Get: %s\n", err)
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
-	}
-	defer resp.Body.Close()
-
-	response, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("ReadAll: %s\n", err)
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
-	}
-
-	log.Printf("parseResponseBody: %s\n", string(response))
-
-	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-})
-
-var LoginHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-	w.Write([]byte("Login"))
-	// http://stackoverflow.com/questions/27368973/golang-facebook-authentication-using-golang-org-x-oauth2
-})
+	return id
+}
