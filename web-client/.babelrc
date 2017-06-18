@@ -1,0 +1,17 @@
+{
+  "presets": [
+    "es2015",
+    "react"
+  ],
+  "plugins": [
+    "transform-do-expressions",
+    "transform-object-rest-spread",
+    "syntax-do-expressions",
+    "syntax-object-rest-spread",
+    ["transform-runtime", {
+      "polyfill": true,
+      "regenerator": true
+    }],
+    "transform-class-properties"
+  ]
+}
