@@ -5,40 +5,40 @@
     background-color: #222222;
 }
 
-.sidebar-list {
+.sidebar_list {
 
 }
 
-.fixed-left {
+.fixed_left {
     top: 0;
     bottom: 0;
     left: 0;
     position: fixed;
 }
 
-.clean-link {
+.clean_link {
     text-decoration: none;
 }
 
-.sidebar-item {
+.item {
     display: block;
     padding: 10px 15px;
 }
 
-.sidebar-item:hover {
+.item:hover {
     color: rgba(255, 255, 255, .5);
 }
 
-.sidebar-item:focus {
+.item:focus {
     border-top: solid thin #7f7f7f;
     border-bottom: solid thin #7f7f7f;
 }
 
-.sidebar-quiet-label {
+.quiet_label {
     color: white;
 }
 
-.sidebar-selected-label {
+.selected_label {
     background-color: #313131;
     color: white;
 }
@@ -53,7 +53,7 @@
     color: #222222
 }
 
-.sidebar-content {
+.content {
     display: block;
     margin-left: 120px;
 }

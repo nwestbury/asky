@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
-import "./SideBar.scss"
+import sidebarStyles from "./SideBar.scss";
 
 //TODO: Add icons
 export const defaultSidebarItems = [
@@ -29,11 +29,11 @@ class SideBar extends Component {
     render() {
         const { items } = this.props;
         return (
-            <div className="sidebar fixed-left dark">
+            <div className={[sidebarStyles.sidebar, sidebarStyles.fixed_left, sidebarStyles.dark].join(" ")}>
                 { items.map((item, index) => (
                     <NavLink
-                        activeClassName="sidebar-selected-label"
-                        className="sidebar-item clean-link sidebar-quiet-label strong"
+                        activeClassName={sidebarStyles.selected_label}
+                        className={[sidebarStyles.item, sidebarStyles.clean_link, sidebarStyles.quiet_label, sidebarStyles.strong].join(" ")}
                         activeStyle={{borderLeft: "solid medium ".concat(item.accentColor)}}
                         style={{borderLeft: "solid medium #222222"}}
                         key={item.label.toLowerCase()}
@@ -52,7 +52,7 @@ class SideBar extends Component {
 const SideBarWrapper = (props) => (
   <div style={ { margin: 0, padding: 0 } }>
       <SideBar items={props.items}/>
-      <div className="sidebar-content">
+      <div className={sidebarStyles.content}>
           { props.children }
       </div>
   </div>
