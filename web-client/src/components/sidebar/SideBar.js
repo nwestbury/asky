@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
-import sidebarStyles from "./SideBar.scss";
+import sidebarStyles from "./sidebar.scss";
 
 //TODO: Add icons
 export const defaultSidebarItems = [

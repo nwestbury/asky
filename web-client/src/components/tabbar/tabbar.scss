@@ -1,0 +1,28 @@
+.tabbar {
+    margin-top: 5px;
+    float: right;
+}
+
+.item {
+    display: inline-block;
+    padding: 10px;
+    text-decoration: none;
+
+}
+
+.item:hover {
+    color: rgba(0, 0, 0, .5);
+}
+
+.quiet_label {
+    color: rgba(0, 0, 0, .5);
+}
+
+.selected_label {
+    color: rgba(0, 0, 0, .75);
+}
+
+.strong {
+    font-family: "Arial Rounded MT Bold", sans-serif;
+    font-weight: bold;
+}

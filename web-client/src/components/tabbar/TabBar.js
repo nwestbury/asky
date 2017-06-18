@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
-import "./TabBar.css"
+import styles from "./tabbar.scss"
 
 class TabBar extends Component {
 
@@ -23,11 +23,11 @@ class TabBar extends Component {
     render() {
         const { items } = this.props;
         return (
-            <div className="tabbar fr">
+            <div className={styles.tabbar}>
                 { items.map((item, index) => (
                     <NavLink
-                        activeClassName=".tabbar-selected-label"
-                        className="tabbar-item clean-link tabbar-quiet-label strong"
+                        activeClassName={styles.selected_label}
+                        className={[styles.item, styles.quiet_label, styles.strong].join(" ")}
                         activeStyle={{borderBottom: "solid thin ".concat(item.accentColor)}}
                         style={{borderBottom: "solid thin #eeeeee"}}
                         key={item.label.toLowerCase()}
