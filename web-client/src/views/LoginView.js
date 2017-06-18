@@ -30,7 +30,7 @@ class LoginView extends Component {
         loginCallback.connect();
     }
 
-    componentDidUnmount() {
+    componentWillUnmount() {
         loginCallback.close();
     }
 
