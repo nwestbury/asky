@@ -1,37 +1,39 @@
 /**
  * Created by James on 2017-05-13.
  */
-
 import React, { Component } from 'react';
-import io from 'socket.io-client';
+import { connect } from 'react-redux';
+//import io from 'socket.io-client';
+import { createSession } from '../actions/session';
 import './LoginView.css';
 
 import FacebookLogin from 'react-facebook-login';
 
-const socket = io("asky.ml");
+//const socket = io("asky.ml");
 
 const login = (facebookResp) => {
-    socket.emit("login", facebookResp, loginCallback);
+    //socket.emit("login", facebookResp, loginCallback);
 };
 
-const loginCallback = socket.on("loginresp", responseServer);
+const loginCallback = () => {} //socket.on("loginresp", responseServer);
 
 const responseServer = (response) => {
     console.log(response);
 };
 
-const responseFacebook = (response) => {
+const responseFacebook = (makeSession) => (response) => {
     console.log(response);
+    makeSession(response.email, response.accessToken);
 };
 
 class LoginView extends Component {
 
     componentDidMount() {
-        loginCallback.connect();
+        //loginCallback.connect();
     }
 
     componentWillUnmount() {
-        loginCallback.close();
+        //loginCallback.close();
     }
 
     render() {
@@ -42,10 +44,14 @@ class LoginView extends Component {
                     appId="315717428848841"
                     autoLoad={true}
                     fields="email"
-                    callback={responseFacebook} />
+                    callback={responseFacebook(this.props.makeSession)} />
             </div>
         );
     }
 }
 
-export default LoginView;
+const mapDispatchToProps = dispatch => ({
+    makeSession: (username, token) => dispatch(createSession(username, token)),
+});
+
+export default connect(null, mapDispatchToProps)(LoginView);

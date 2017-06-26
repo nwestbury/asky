@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import { Provider } from 'react-redux';
 import {
     BrowserRouter as Router,
     Route,
 } from 'react-router-dom'
+import store from './store';
 
 import SideBarWrapper, { defaultSidebarItems } from './components/sidebar/SideBar';
 
@@ -10,9 +12,8 @@ import MainPage from './views/MainView';
 import HomePage from './views/HomeView';
 import LoginPage from './views/LoginView';
 
-class App extends Component {
-  render() {
-    return (
+const App = () => (
+    <Provider store={store}>
         <Router>
             <div>
                 <SideBarWrapper items={defaultSidebarItems}>
@@ -22,8 +23,7 @@ class App extends Component {
                 </SideBarWrapper>
             </div>
         </Router>
-    );
-  }
-}
+    </Provider>
+);
 
 export default App;
