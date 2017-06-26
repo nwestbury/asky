@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
-import {
-    BrowserRouter as Router,
-    Route,
-} from 'react-router-dom'
+import { BrowserRouter, Route } from 'react-router-dom'
 import store from './store';
 
 import SideBarWrapper, { defaultSidebarItems } from './components/sidebar/SideBar';
@@ -14,7 +11,7 @@ import LoginPage from './views/LoginView';
 
 const App = () => (
     <Provider store={store}>
-        <Router>
+        <BrowserRouter>
             <div>
                 <SideBarWrapper items={defaultSidebarItems}>
                     <Route exact path="/" component={MainPage}/>
@@ -22,7 +19,7 @@ const App = () => (
                     <Route path="/login" component={LoginPage}/>
                 </SideBarWrapper>
             </div>
-        </Router>
+        </BrowserRouter>
     </Provider>
 );
 
